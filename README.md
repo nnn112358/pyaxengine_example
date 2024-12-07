@@ -1,6 +1,6 @@
 ## abst
 pyaxengineのpythonテストファイルです。
-
+opencv対応しました。
 
 ## Install
 
