@@ -36,7 +36,7 @@ def preprocess_image(image_path, target_size=(256, 256), crop_size=(224, 224)):
         raise ValueError(f"Failed to load image: {image_path}")
     
     # Convert BGR to RGB
-    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     # Get original dimensions
     height, width = img.shape[:2]
