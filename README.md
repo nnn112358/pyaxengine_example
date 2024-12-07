@@ -87,7 +87,7 @@ Class Index: 285, Score: 10.830123901367188
 
 ```
 
-
+### mobilenetv2.axmodel
 ![image](https://github.com/user-attachments/assets/e7528c19-3f1e-4c49-868d-89003c747664)
 
 
