@@ -4,11 +4,15 @@ pyaxengineのpython＋opencvを動かすサンプルです。
 
 ## Install
 
+Module-LLMにルートでログインし、pyaxengineをインストールします。
 ```
-wget https://github.com/AXERA-TECH/pyaxengine/releases/download/0.0.1rc1/axengine-0.0.1-py3-none-any.whl
-pip install axengine-0.0.1-py3-none-any.whl
+root@m5stack-LLM # wget https://github.com/AXERA-TECH/pyaxengine/releases/download/0.0.1rc1/axengine-0.0.1-py3-none-any.whl
+root@m5stack-LLM # pip install axengine-0.0.1-py3-none-any.whl
 ```
-
+Module-LLMにルートでログインし、 fastapi opencv-python uvicornをインストールします。
+```
+root@m5stack-LLM # pip install fastapi opencv-python uvicorn
+```
 ## Example
 
 ```
