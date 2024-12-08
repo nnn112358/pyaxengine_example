@@ -29,8 +29,8 @@ root@m5stack-LLM:# python3 depth_anything_camera_stream.py
 
 ## 参考
 
-Module-LLMにUSBカメラを接続する
-https://qiita.com/nnn112358/items/b284763de0d333dfdb73
-
-pyaxengine
-https://github.com/AXERA-TECH/pyaxengine
+Module-LLMにUSBカメラを接続する <br>
+https://qiita.com/nnn112358/items/b284763de0d333dfdb73 <br>
+ <br>
+pyaxengine <br>
+https://github.com/AXERA-TECH/pyaxengine <br>
