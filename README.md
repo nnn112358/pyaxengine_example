@@ -1,5 +1,6 @@
 ## abst
-pyaxengineのpython＋opencvのサンプルです。
+M5StackのModule-LLMで、
+pyaxengineのpython＋opencvを動かすサンプルです。
 
 ## Install
 
