@@ -3,7 +3,7 @@ pyaxengineのpythonテストファイルです。
 opencv対応しました。
 
 ## 注記
-1週目と2週目で実行時間が少なくなるのがやや怪しい。
+post処理がC++版と異なる。
 
 ## Install
 
@@ -33,58 +33,6 @@ Outputs:
 224
 224
 Final tensor shape: (224, 224, 3)
-
-Preprocessed tensor information:
-Shape: (224, 224, 3)
-dtype: uint8
-Value range: [0.000, 255.000]
-Input name: input
-Input tensor shape: (224, 224, 3)
-Expected input shape: [1, 224, 224, 3]
-Expected output shape: [1, 1000]
-
-Iteration 1/10
-Inference Time: 27.43 ms
-
-Output tensor information:
-Shape: (1, 1000)
-dtype: float32
-Value range: [-6.340, 11.226]
-Top 5 Predictions:
-Class Index: 287, Score: 11.226346969604492
-Class Index: 281, Score: 11.226346969604492
-Class Index: 282, Score: 11.09427261352539
-Class Index: 277, Score: 10.830123901367188
-Class Index: 285, Score: 10.830123901367188
-
-Iteration 2/10
-Inference Time: 2.00 ms
-
-Output tensor information:
-Shape: (1, 1000)
-dtype: float32
-Value range: [-6.340, 11.226]
-Top 5 Predictions:
-Class Index: 287, Score: 11.226346969604492
-Class Index: 281, Score: 11.226346969604492
-Class Index: 282, Score: 11.09427261352539
-Class Index: 277, Score: 10.830123901367188
-Class Index: 285, Score: 10.830123901367188
-
-Iteration 3/10
-Inference Time: 1.94 ms
-
-Output tensor information:
-Shape: (1, 1000)
-dtype: float32
-Value range: [-6.340, 11.226]
-Top 5 Predictions:
-Class Index: 287, Score: 11.226346969604492
-Class Index: 281, Score: 11.226346969604492
-Class Index: 282, Score: 11.09427261352539
-Class Index: 277, Score: 10.830123901367188
-Class Index: 285, Score: 10.830123901367188
-
 ```
 
 ### mobilenetv2.axmodel
