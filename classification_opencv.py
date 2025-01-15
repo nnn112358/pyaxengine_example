@@ -15,12 +15,12 @@ def load_model(model_path):
     for input in inputs:
         print(f"- Name: {input.name}")
         print(f"- Shape: {input.shape}")
-#        print(f"- Type: {input.type}")
+        print(f"- Type: {input.dtype}")
     print("\nOutputs:")
     for output in outputs:
         print(f"- Name: {output.name}")
         print(f"- Shape: {output.shape}")
-#        print(f"- Type: {output.type}")
+        print(f"- Type: {output.dtype}")
 
     return session
 
@@ -36,8 +36,6 @@ def preprocess_image(image_path, target_size=(256, 256), crop_size=(224, 224)):
     # Get original dimensions
     height, width = img.shape[:2]
     
-    print(width)
-    print(height)
 
     # Determine the shorter side and calculate the center crop
     if width < height:
@@ -64,6 +62,8 @@ def preprocess_image(image_path, target_size=(256, 256), crop_size=(224, 224)):
     
     # Flip the color channels back (equivalent to [..., ::-1])
     img_array = img_array[..., ::-1]
+    img_array = np.expand_dims(img_array, axis=0)
+
     print("Final tensor shape:", img_array.shape)
 
     # Debug: Print preprocessed tensor information
@@ -121,12 +121,9 @@ def main(model_path, image_path, target_size, crop_size, k):
             print(f"Class Index: {top_k_indices[j]}, Score: {top_k_scores[j]}")
 
 
-
-
-
 if __name__ == "__main__":
     MODEL_PATH = "/opt/data/npu/models/mobilenetv2.axmodel"
-    IMAGE_PATH = "./cat.jpg"
+    IMAGE_PATH = "/opt/data/npu/images/cat.jpg"
     TARGET_SIZE = (224, 224)  # Resize to 256x256
     CROP_SIZE = (224, 224)  # Crop to 224x224
     K = 5  # Top K predictions

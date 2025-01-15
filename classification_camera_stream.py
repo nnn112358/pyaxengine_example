@@ -86,6 +86,7 @@ def preprocess_image(img, target_size=(256, 256), crop_size=(224, 224)):
 #    print(f"Shape: {img_array.shape}")
 #    print(f"dtype: {img_array.dtype}")
 #    print(f"Value range: [{img_array.min():.3f}, {img_array.max():.3f}]")
+    img_array = np.expand_dims(img_array, axis=0)
 
     return img_array
 

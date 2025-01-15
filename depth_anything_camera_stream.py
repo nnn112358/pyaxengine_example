@@ -64,6 +64,7 @@ def preprocess_image(img, target_size=(384, 256)):
 #    print(f"Shape: {img_array.shape}")
 #    print(f"dtype: {img_array.dtype}")
 #    print(f"Value range: [{img_array.min():.3f}, {img_array.max():.3f}]")
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
 
     return img_array
 
@@ -101,7 +102,7 @@ def post_process(output_data: np.ndarray,original_image: np.ndarray):
 def get_video_stream() -> Generator[bytes, None, None]:
     print(f"please access video stream")
 
-    session = load_model("./depth_anything_vits14-sim-384x256.axmodel")
+    session = load_model("./depth_anything_u8.axmodel")
     target_size=(384, 256)
 
     input_name = session.get_inputs()[0].name
