@@ -1,110 +1,42 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 import cv2
 import numpy as np
-from typing import Generator
-import time
 import axengine as axe
-from typing import List
+import time
 
 app = FastAPI()
+MODEL_PATH = '/opt/m5stack/data/depth_anything/depth_anything_u8.axmodel'
 
-def load_model(model_path):
-    session = axe.InferenceSession(model_path)
+def initialize_model(model_path: str):
+    """モデルを初期化し、推論セッションを返す"""
+    return axe.InferenceSession(model_path)
 
-    inputs = session.get_inputs()
-    outputs = session.get_outputs()
-    print("\nModel Information:")
-    print("Inputs:")
-    for input in inputs:
-        print(f"- Name: {input.name}")
-        print(f"- Shape: {input.shape}")
-#        print(f"- Type: {input.type}")
-    print("\nOutputs:")
-    for output in outputs:
-        print(f"- Name: {output.name}")
-        print(f"- Shape: {output.shape}\n\n")
-#        print(f"- Type: {output.type}")
-
-    return session
-
-def get_top_k_predictions(output, k=5):
-    print("\nOutput tensor information:")
-    print(f"Shape: {output[0].shape}")
-    print(f"dtype: {output[0].dtype}")
-#    print(f"Value range: [{output[0].min():.3f}, {output[0].max():.3f}]")
-
-    # Get top k predictions
-#    top_k_indices = np.argsort(output[0].flatten())[-k:][::-1]
-#    top_k_scores = output[0].flatten()[top_k_indices]
-    return 0
-
-def resize_frame(frame: np.ndarray, width: int = 320, height: int = 240) -> np.ndarray:
-    return cv2.resize(frame, (width, height), interpolation=cv2.INTER_AREA)
-
-
-def preprocess_image(img, target_size=(384, 256)):
-    if img is None:
-        raise ValueError(f"Failed to load image")
+def process_frame(frame: np.ndarray, target_size=(384, 256)) -> np.ndarray:
+    """入力フレームの前処理を行う"""
+    if frame is None:
+        raise ValueError("フレームの読み込みに失敗しました")
     
-    # Convert BGR to RGB
-    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    resized_frame = cv2.resize(frame, target_size)
+    return np.expand_dims(resized_frame[..., ::-1], axis=0)
 
-    # Get original dimensions
-    height, width = img.shape[:2]
-
-    # Resize the image to target_size
-    img = cv2.resize(img, target_size)
-
-    img_array = img[..., ::-1]
-#    print("Final tensor shape:", img_array.shape)
-
-    # Debug: Print preprocessed tensor information
-#    print("\nPreprocessed tensor information:")
-#    print(f"Shape: {img_array.shape}")
-#    print(f"dtype: {img_array.dtype}")
-#    print(f"Value range: [{img_array.min():.3f}, {img_array.max():.3f}]")
-    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
-
-    return img_array
-
-
-def post_process(output_data: np.ndarray,original_image: np.ndarray):
-    """
-    Post-process depth estimation output and save visualization results.
-    """
-
-    output_data2 = np.array(output_data)
-
-    print(f"Shape: {output_data2.shape}")
-
-
-    # Reshape feature map if needed
-    feature = output_data2.reshape(output_data2.shape[-2:])
+def create_depth_visualization(depth_map: np.ndarray, original_frame: np.ndarray) -> np.ndarray:
+    """深度マップの可視化を行う"""
+    depth_feature = depth_map.reshape(depth_map.shape[-2:])
     
-    # Normalize feature map
-    min_val = np.min(feature)
-    max_val = np.max(feature)
-    feature = (feature - min_val) / (max_val - min_val)
+    # 正規化と色付け
+    normalized = (depth_feature - depth_feature.min()) / (depth_feature.max() - depth_feature.min())
+    depth_colored = cv2.applyColorMap((normalized * 255).astype(np.uint8), cv2.COLORMAP_MAGMA)
     
-    # Scale to 8-bit
-    feature = (feature * 255).astype(np.uint8)
+    # 元の画像サイズにリサイズ
+    depth_resized = cv2.resize(depth_colored, (original_frame.shape[1], original_frame.shape[0]))
     
-    # Apply colormap
-    colored_depth = cv2.applyColorMap(feature, cv2.COLORMAP_MAGMA)
-    
-    # Resize to original image dimensions
-    colored_depth = cv2.resize(colored_depth, (original_image.shape[1], original_image.shape[0]))
-    combined_image = np.concatenate([original_image, colored_depth], axis=1)
-    return combined_image
+    # 元画像と深度マップを横に並べる
+    return np.concatenate([original_frame, depth_resized], axis=1)
 
-
-def get_video_stream() -> Generator[bytes, None, None]:
-    print(f"please access video stream")
-
-    session = load_model("./depth_anything_u8.axmodel")
-    target_size=(384, 256)
-
+def get_video_stream():
+    """ビデオストリームを生成する"""
+    session = initialize_model(MODEL_PATH)
     input_name = session.get_inputs()[0].name
     camera = cv2.VideoCapture(0)
 
@@ -113,29 +45,29 @@ def get_video_stream() -> Generator[bytes, None, None]:
             success, frame = camera.read()
             if not success:
                 break
-            frame = resize_frame(frame)
 
-            input_tensor = preprocess_image(frame, target_size)
-
-        # Measure inference time
-            start_time = time.time()
+            # フレームをリサイズして処理
+            frame = cv2.resize(frame, (320, 240))
+            input_tensor = process_frame(frame)
+            
+            # 深度推定を実行
             output = session.run(None, {input_name: input_tensor})
-            end_time = time.time()
-            inference_time = (end_time - start_time) * 1000  # Convert to milliseconds
-        
-            print(f"Inference Time: {inference_time:.2f} ms")
-        
-            out_img=post_process(output,frame)
- 
-            time.sleep(0.005)
-            _, buffer = cv2.imencode('.jpg', out_img)
+            
+            # 結果を可視化
+            visualization = create_depth_visualization(output[0], frame)
+            
+            # JPEGエンコードしてストリーミング
+            _, buffer = cv2.imencode('.jpg', visualization)
             yield (b'--frame\r\n'
                   b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+            
+            time.sleep(0.005)
     finally:
         camera.release()
 
 @app.get("/video")
 async def video_endpoint():
+    """ビデオストリーミングのエンドポイント"""
     return StreamingResponse(
         get_video_stream(),
         media_type='multipart/x-mixed-replace; boundary=frame'
@@ -144,4 +76,3 @@ async def video_endpoint():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=7777)
-
