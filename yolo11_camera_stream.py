@@ -18,7 +18,13 @@ class Detection:
 # 定数の設定
 CONFIDENCE_THRESHOLD = 0.45
 NMS_THRESHOLD = 0.45
+
+#M5Stackのllm-yolo_1.4-m5stack1_arm64.deb内のaxmodelを使う場合
 INPUT_SIZE = (320, 320)
+#AXERAのサンプルファイルを使用する場合
+#INPUT_SIZE = (640, 640)
+
+
 REG_MAX = 16
 MODEL_PATH = '/opt/m5stack/data/yolo11n/yolo11n.axmodel'
 
@@ -26,8 +32,18 @@ COCO_CLASSES = [
     'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
     'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
     'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
-    'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe',
-    # ... 他のクラスは省略 ...
+    'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra',
+    'giraffe', 'backpack', 'umbrella', 'handbag', 'tie',
+    'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
+    'kite', 'baseball bat', 'baseball glove', 'skateboard',
+    'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup',
+    'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
+    'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
+    'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed',
+    'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote',
+    'keyboard', 'cell phone', 'microwave', 'oven', 'toaster',
+    'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors',
+    'teddy bear', 'hair drier', 'toothbrush'
 ]
 
 def initialize_model(model_path: str) -> axe.InferenceSession:
@@ -37,8 +53,13 @@ def initialize_model(model_path: str) -> axe.InferenceSession:
 
 def process_frame(frame: np.ndarray, target_size=(320, 320)) -> np.ndarray:
     """フレームの前処理を行う"""
+
+    #M5Stackのllm-yolo_1.4-m5stack1_arm64.deb内のaxmodelを使う場合
     # BGRからRGBに変換
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    #AXERAのサンプルファイルのaxmodelを使用する場合,COLOR_BGR2RGBは不要。
+    
     # リサイズ
     resized = cv2.resize(rgb_frame, target_size)
     # バッチ次元を追加
