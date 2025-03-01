@@ -47,7 +47,6 @@ def get_video_stream():
                 break
 
             # フレームをリサイズして処理
-            frame = cv2.resize(frame, (320, 240))
             input_tensor = process_frame(frame)
             
             # 深度推定を実行
