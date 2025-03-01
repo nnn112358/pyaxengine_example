@@ -55,10 +55,10 @@ def process_frame(frame: np.ndarray, target_size=(320, 320)) -> np.ndarray:
     """フレームの前処理を行う"""
 
     #M5Stackのllm-yolo_1.4-m5stack1_arm64.deb内のaxmodelを使う場合
+    #AXERAのサンプルファイルのaxmodelを使用する場合,COLOR_BGR2RGBは不要。
     # BGRからRGBに変換
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    #AXERAのサンプルファイルのaxmodelを使用する場合,COLOR_BGR2RGBは不要。
     
     # リサイズ
     resized = cv2.resize(rgb_frame, target_size)
